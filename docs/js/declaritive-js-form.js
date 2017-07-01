@@ -8,15 +8,32 @@ function make_form(schema) {
 
 
 function partial_make_form(schema) {
-    switch (schema.type) {
-        case "string":
-            return make_string_form(schema.label);
-        case "integer":
-            return make_integer_form(schema);
-        default:
-            throw new Exception("Unknown schema.type: " + schema.type);
+    if (Array.isArray(schema)) {
+        return make_form_sequence(schema);
+    } else {
+        switch (schema.type) {
+            case "string":
+                return make_string_form(schema.label);
+            case "integer":
+                return make_integer_form(schema);
+            case "group":
+                return make_group_form(schema.content);
+            default:
+                throw new Exception("Unknown schema.type: " + schema.type);
+        }
     }
-} 
+}
+
+
+
+
+function make_group_form(content) {
+    let divElement = document.createElement("div");
+    for (let s of content) {
+        divElement.appendChild(partial_make_form(s));
+    }
+    return divElement;
+}
 
 
 
@@ -31,6 +48,10 @@ function make_string_form(labelText) {
     labelElement.appendChild(document.createTextNode(labelText));
     labelElement.appendChild(inputElement);
     
-    return labelElement;
+    /* make <div> */
+    let divElement = document.createElement("div");
+    divElement.appendChild(labelElement);
+    
+    return divElement;
 }
 
