@@ -1,23 +1,23 @@
-function make_form(schema) {
+function makeForm(schema) {
     let formElement = document.createElement("form");
-    formElement.appendChild(partial_make_form(schema));
+    formElement.appendChild(partialMakeForm(schema));
     return formElement;
 }
 
 
 
 
-function partial_make_form(schema) {
+function partialMakeForm(schema) {
     if (Array.isArray(schema)) {
-        return make_form_sequence(schema);
+        return makeFormSequence(schema);
     } else {
         switch (schema.type) {
-            case "string":
-                return make_string_form(schema.label);
-            case "integer":
-                return make_integer_form(schema);
             case "group":
-                return make_group_form(schema.content);
+                return makeGroupForm(schema.content);
+            case "string":
+                return makeStringForm(schema.label);
+            case "number":
+                return makeNumberForm(schema.label, schema.min, schema.max, schema.step);
             default:
                 throw new Exception("Unknown schema.type: " + schema.type);
         }
@@ -27,10 +27,10 @@ function partial_make_form(schema) {
 
 
 
-function make_group_form(content) {
+function makeGroupForm(content) {
     let divElement = document.createElement("div");
     for (let s of content) {
-        divElement.appendChild(partial_make_form(s));
+        divElement.appendChild(partialMakeForm(s));
     }
     return divElement;
 }
@@ -38,7 +38,7 @@ function make_group_form(content) {
 
 
 
-function make_string_form(labelText) {
+function makeStringForm(labelText) {
     /* make <input> */
     let inputElement = document.createElement("input");
     inputElement.type = "text";
@@ -48,10 +48,36 @@ function make_string_form(labelText) {
     labelElement.appendChild(document.createTextNode(labelText));
     labelElement.appendChild(inputElement);
     
-    /* make <div> */
-    let divElement = document.createElement("div");
-    divElement.appendChild(labelElement);
-    
-    return divElement;
+    return labelElement;
 }
 
+
+
+function makeNumberForm(labelString, minNumber = null, maxNumber = null, stepNumber = null) {
+    let inputElement = makeInputElement("number");
+    inputElement.min = minNumber;
+    inputElement.max = maxNumber;
+    inputElement.step = stepNumber;
+    return makeLabelElement(labelString, inputElement);
+}
+
+
+
+
+
+/* helper functions */
+
+function makeInputElement(typeString) {
+    let e = document.createElement("input");
+    e.type = typeString;
+    return e;
+}
+
+
+
+function makeLabelElement(labelString, inputElement) {
+    let e = document.createElement("label");
+    e.appendChild(document.createTextNode(labelString));
+    e.appendChild(inputElement);
+    return e;
+}
