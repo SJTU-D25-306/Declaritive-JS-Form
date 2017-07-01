@@ -18,6 +18,8 @@ function partialMakeForm(schema) {
                 return makeStringForm(schema.label);
             case "number":
                 return makeNumberForm(schema.label, schema.min, schema.max, schema.step);
+            case "singleChoice": 
+                return makeSingleChoiceForm(schema.label, schema.choices);
             default:
                 throw new Exception("Unknown schema.type: " + schema.type);
         }
@@ -61,7 +63,33 @@ function makeNumberForm(labelString, minNumber = null, maxNumber = null, stepNum
     return makeLabelElement(labelString, inputElement);
 }
 
+function makeSingleChoiceForm(label, choices) {
+    let singleChoiceElement = document.createElement("div");
 
+    let labelElement = document.createElement("label");
+    labelElement.append(label);
+    singleChoiceElement.appendChild(labelElement);
+    singleChoiceElement.appendChild(document.createElement('br'));
+
+    for (let choice of choices) {
+        let radioElement = makeSingleRadio(label, choice);
+        singleChoiceElement.appendChild(radioElement);
+
+        let desc = document.createTextNode(choice);
+        singleChoiceElement.appendChild(desc);
+        singleChoiceElement.appendChild(document.createElement('br'));
+    }
+
+    return singleChoiceElement;
+}
+
+function makeSingleRadio(name, value) {
+    let radio = makeInputElement("radio");
+    radio.name = name;
+    radio.value = value;
+
+    return radio;
+}
 
 
 

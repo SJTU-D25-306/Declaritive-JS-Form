@@ -18,6 +18,15 @@ bodyElement.appendChild(makeForm({
             label: "Age",
             min: 0,
             step: 1
+        },
+        {
+            type: "singleChoice",
+            label: "Animal",
+            choices: [
+                "Dog",
+                "Cat",
+                "Bird"
+            ]
         }
     ]
 }));
